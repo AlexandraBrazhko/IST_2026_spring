@@ -1,4 +1,3 @@
-import caesar
 def encrypt_vigenere(plaintext: str, keyword: str) -> str:
     """
     Encrypts plaintext using a Vigenere cipher.
@@ -11,18 +10,22 @@ def encrypt_vigenere(plaintext: str, keyword: str) -> str:
     'LXFOPVEFRNHR'
     """
     ciphertext = ""
-    lower = string.ascii_lowercase
-    upper = string.ascii_uppercase
-    n = len(keyword)
-    cipher_text = list(plaintext)
-    for i in range(n):
-      if keyword[i] in lower:
-        shift = lower.find(keyword[i])
-      else:
-        shift = upper.find(keyword[i])
-      cipher_text[i::n] = caesar.encrypt_caesar(plaintext[i::n], shift)
-    cipher_text = "".join(cipher_text)
-    return cipher_text
+    keyword = keyword.lower()
+    key_index = 0
+    
+    for char in plaintext:
+        if char.isalpha():
+            shift = ord(keyword[key_index % len(keyword)]) - ord('a')
+            if char.islower():
+                start = ord('a')
+                ciphertext += chr((ord(char) - start + shift) % 26 + start)
+            else:
+                start = ord('A')
+                ciphertext += chr((ord(char) - start + shift) % 26 + start)
+            key_index += 1
+        else:
+            ciphertext += char
+    return ciphertext
 
 
 def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
@@ -37,15 +40,19 @@ def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
     'ATTACKATDAWN'
     """
     plaintext = ""
-    lower = string.ascii_lowercase
-    upper = string.ascii_uppercase
-    n = len(keyword)
-    plaintext = list(ciphertext)
-    for i in range(n):
-      if keyword[i] in lower:
-        shift = lower.find(keyword[i])
-      else:
-        shift = upper.find(keyword[i])
-      plaintext[i::n] = caesar.encrypt_caesar(ciphertext[i::n], -shift)
-    plaintext = "".join(plaintext)
+    keyword = keyword.lower()
+    key_index = 0
+    
+    for char in ciphertext:
+        if char.isalpha():
+            shift = ord(keyword[key_index % len(keyword)]) - ord('a')
+            if char.islower():
+                start = ord('a')
+                plaintext += chr((ord(char) - start - shift) % 26 + start)
+            else:
+                start = ord('A')
+                plaintext += chr((ord(char) - start - shift) % 26 + start)
+            key_index += 1
+        else:
+            plaintext += char
     return plaintext
